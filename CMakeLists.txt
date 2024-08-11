@@ -11,7 +11,6 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
 # For MSVC, make sure that the runtime library is statically linked
 if(MSVC)
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
