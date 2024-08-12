@@ -1,5 +1,6 @@
 # visual studio files
 .vs
+CMakeSettings.json
 
 # build output directory
 out
