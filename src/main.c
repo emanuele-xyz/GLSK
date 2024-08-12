@@ -1,4 +1,4 @@
-#include <gl_starter/hello.h>
+#include <glsk/hello.h>
 
 int main(void)
 {

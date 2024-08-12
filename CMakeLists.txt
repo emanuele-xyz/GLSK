@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 project(
-    gl_starter
+    glsk
     VERSION 1.0
     LANGUAGES C
 )
@@ -55,8 +55,8 @@ target_link_libraries(
 target_compile_definitions(
     "${CMAKE_PROJECT_NAME}"
     PRIVATE
-    $<$<CONFIG:Debug>:GL_STARTER_DEBUG>
-    $<$<CONFIG:Release>:GL_STARTER_RELEASE>
+    $<$<CONFIG:Debug>:GLSK_DEBUG>
+    $<$<CONFIG:Release>:GLSK_RELEASE>
 )
 if (MSVC)
     target_compile_options("${CMAKE_PROJECT_NAME}" PRIVATE /Wall /WX)
