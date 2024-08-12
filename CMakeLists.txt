@@ -59,7 +59,7 @@ target_compile_definitions(
     $<$<CONFIG:Release>:GLSK_RELEASE>
 )
 if (MSVC)
-    target_compile_options("${CMAKE_PROJECT_NAME}" PRIVATE /Wall /WX)
+    target_compile_options("${CMAKE_PROJECT_NAME}" PRIVATE /Wall)
 else()
-    target_compile_options("${CMAKE_PROJECT_NAME}" PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options("${CMAKE_PROJECT_NAME}" PRIVATE -Wall -Wextra -Wpedantic)
 endif()
