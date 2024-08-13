@@ -13,11 +13,6 @@ static void glsk_glfw_error_callback(int error_code, const char* description)
     printf("[GLFW]: (%d) %s\n", error_code, description);
 }
 
-static void glsk_glfw_framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
-
 int main(void)
 {
     glfwSetErrorCallback(glsk_glfw_error_callback);
@@ -33,7 +28,7 @@ int main(void)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     GLFWwindow* window = glfwCreateWindow(WINDOW_W, WINDOW_H, WINDOW_TITLE, NULL, NULL);
-    if (!window) 
+    if (!window)
     {
         puts("[GLSK]: failed to create GLFW window");
         goto exit;
@@ -48,12 +43,21 @@ int main(void)
         goto exit;
     }
 
-    glViewport(0, 0, WINDOW_W, WINDOW_H);
-    glfwSetFramebufferSizeCallback(window, glsk_glfw_framebuffer_size_callback);
-
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
+
+        // NOTE: render
+        {
+            int window_w = 0;
+            int window_h = 0;
+            glfwGetWindowSize(window, &window_w, &window_h);
+            glViewport(0, 0, window_w, window_h);
+
+            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+        }
+
         glfwSwapBuffers(window);
     }
 
