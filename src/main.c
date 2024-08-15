@@ -88,8 +88,8 @@ int main(void)
         goto exit;
     }
 
-    #if defined(GLSK_DEBUG)
     // NOTE: check for opengl debug context
+    #if defined(GLSK_DEBUG)
     {
         int flags = 0;
         glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
@@ -98,6 +98,7 @@ int main(void)
             glEnable(GL_DEBUG_OUTPUT);
             glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
             glDebugMessageCallback(glsk_gl_debug_msg_callback, NULL);
+            // glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE); // NOTE: for filtering debug messages
         }
         else
         {
