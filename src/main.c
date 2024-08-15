@@ -3,6 +3,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <cglm/cglm.h>
 
 #define WINDOW_W 1280
 #define WINDOW_H 720
@@ -106,6 +107,18 @@ int main(void)
         }
     }
     #endif
+
+    float vertices[] =
+    {
+        -0.5f, -0.5f, 0.0f,
+        +0.5f, -0.5f, 0.0f,
+        +0.0f, +0.5f, 0.0f,
+    };
+
+    GLuint vbo = 0;
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     while (!glfwWindowShouldClose(window))
     {
