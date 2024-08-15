@@ -139,6 +139,7 @@ int main(void)
     }
 
 exit:
+    glDeleteBuffers(1, &vbo);
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
