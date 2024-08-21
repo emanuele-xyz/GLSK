@@ -56,6 +56,36 @@ static void APIENTRY glsk_gl_debug_msg_callback(GLenum source, GLenum type, GLui
     printf("[GL][SRC:%s][TYPE:%s][LEVEL:%s]: (%u) %s\n", source_str, type_str, severity_str, id, message);
 }
 
+size_t glsk_get_file_size(const char* path)
+{
+    size_t out = 0;
+
+    FILE* f = fopen(path, "rb");
+    if (!f) goto exit;
+
+    bool succeeded = fseek(f, 0, SEEK_END);
+    if (!succeeded) goto exit;
+
+    long size = ftell(f);
+    if (size > 0) out = (size_t)(size);
+    else goto exit;
+exit:
+    if (f) fclose(f);
+    return out;
+}
+
+size_t glsk_load_file(const char* path, size_t buf_size, char* buf)
+{
+    size_t bytes_read = 0;
+
+    FILE* f = fopen(path, "rb");
+    if (!f) goto exit;
+    bytes_read = fread(buf, 1, buf_size, f);
+    fclose(f);
+exit:
+    return bytes_read;
+}
+
 int main(void)
 {
     glfwSetErrorCallback(glsk_glfw_error_callback);
@@ -119,6 +149,15 @@ int main(void)
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    {
+        size_t file_size = glsk_get_file_size("glsl/example.vs");
+        if (file_size > 0)
+        {
+            char* file_bytes = calloc(file_size, 1);
+            glsk_load_file("glsl/example.vs", file_size, file_bytes);
+        }
+    }
 
     while (!glfwWindowShouldClose(window))
     {
