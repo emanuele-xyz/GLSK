@@ -63,12 +63,13 @@ size_t glsk_get_file_size(const char* path)
     FILE* f = fopen(path, "rb");
     if (!f) goto exit;
 
-    bool succeeded = fseek(f, 0, SEEK_END);
-    if (!succeeded) goto exit;
+    bool failed = fseek(f, 0, SEEK_END);
+    if (failed) goto exit;
 
     long size = ftell(f);
     if (size > 0) out = (size_t)(size);
     else goto exit;
+
 exit:
     if (f) fclose(f);
     return out;
@@ -82,9 +83,43 @@ size_t glsk_load_file(const char* path, size_t buf_size, char* buf)
     if (!f) goto exit;
     bytes_read = fread(buf, 1, buf_size, f);
     fclose(f);
+
 exit:
     return bytes_read;
 }
+
+#define GLSK_LOG_SIZE 1024
+static char s_log[GLSK_LOG_SIZE] = { 0 };
+
+GLuint glsk_compile_shader(const char* path, GLenum shader_type, GLsizei count, const GLchar* const* string, const GLint* length)
+{
+    GLuint shader = glCreateShader(shader_type);
+    glShaderSource(shader, count, string, length);
+    glCompileShader(shader);
+
+    bool success = 0;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(shader, GLSK_LOG_SIZE, NULL, s_log);
+        printf("[GLSK][%s]: %s\n", path, s_log);
+    }
+
+    return shader;
+}
+
+enum
+{
+    GLSK_SHADER_EXAMPLE,
+    GLSK_SHADER_COUNT,
+};
+
+#define GLSK_VS_PATH(name) "glsl/" name ".vs"
+
+static const char* s_vs_paths[] =
+{
+    [GLSK_SHADER_EXAMPLE] = GLSK_VS_PATH("example"),
+};
 
 int main(void)
 {
@@ -150,13 +185,30 @@ int main(void)
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    // NOTE: compile shader programs
+    for (int i = 0; i < GLSK_SHADER_COUNT; i++)
     {
-        size_t file_size = glsk_get_file_size("glsl/example.vs");
-        if (file_size > 0)
+        // NOTE: compile vertex shader
+        GLuint vs = 0;
+        if (s_vs_paths[i])
         {
-            char* file_bytes = calloc(file_size, 1);
-            glsk_load_file("glsl/example.vs", file_size, file_bytes);
+            size_t file_size = glsk_get_file_size(s_vs_paths[i]);
+            if (file_size > 0)
+            {
+                char* file_bytes = calloc(file_size, 1);
+                if (file_bytes)
+                {
+                    glsk_load_file(s_vs_paths[i], file_size, file_bytes);
+                    int length = (int)(file_size);
+                    vs = glsk_compile_shader(s_vs_paths[i], GL_VERTEX_SHADER, 1, &file_bytes, &length);
+                    free(file_bytes);
+                }
+            }
         }
+
+        // TODO: compile fragment shader
+
+        glDeleteShader(vs);
     }
 
     while (!glfwWindowShouldClose(window))
